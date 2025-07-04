@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>three.js webgl - effects - anaglyph</title>
+        <title>love cube</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <style>
@@ -10,26 +10,26 @@
                 margin: 0px;
                 overflow: hidden;
             }
-			#info {
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				width: 75%; /* Retained from iframe for consistency */
-				text-align: center;
-				z-index: 100;
-				display: block;
-				color: #fff;
-				font-family: Monospace;
-			}
+            #info {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 75%; /* Retained from iframe for consistency */
+                text-align: center;
+                z-index: 100;
+                display: block;
+                color: #fff;
+                font-family: Monospace;
+            }
         </style>
     </head>
     <body>
         <div id="info">
-            happy birthday i put us in the cube
-            <br><br>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3aPQx6uITbOua7OxFhPhrB?utm_source=generator&theme=0" width="25%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
+            happy birthday i put us into the cube :)
+			<br><br>
+			<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3aPQx6uITbOua7OxFhPhrB?utm_source=generator&theme=0" width="30%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
 
         <script type="importmap">
             {
@@ -47,7 +47,7 @@
             import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
             import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
-            let container, camera, scene, renderer, effect; // Restored 'effect'
+            let container, camera, scene, renderer, effect;
             const spheres = [];
             let mouseX = 0, mouseY = 0;
             let windowHalfX = window.innerWidth / 2;
@@ -136,7 +136,10 @@
                 effect.setSize( width, height );
 
                 window.addEventListener( 'resize', onWindowResize );
-                document.addEventListener( 'mousemove', onDocumentMouseMove );
+
+                // ✨ Add event listeners for both mouse and touch events
+                document.addEventListener( 'mousemove', onPointerMove );
+                document.addEventListener( 'touchmove', onPointerMove );
             }
 
             function onWindowResize() {
@@ -148,10 +151,27 @@
                 effect.setSize( window.innerWidth, window.innerHeight );
             }
 
-            function onDocumentMouseMove( event ) {
-                mouseX = ( event.clientX - windowHalfX ) / 100;
-                mouseY = ( event.clientY - windowHalfY ) / 100;
+            // ✨ This new function handles both mouse and touch input
+            function onPointerMove( event ) {
+                // prevent the browser from scrolling on touch
+                if ( event.isPrimary === false ) return;
+
+                let clientX, clientY;
+
+                if ( event.touches ) {
+                    // Use the first touch point
+                    clientX = event.touches[ 0 ].clientX;
+                    clientY = event.touches[ 0 ].clientY;
+                } else {
+                    // Use mouse coordinates
+                    clientX = event.clientX;
+                    clientY = event.clientY;
+                }
+
+                mouseX = ( clientX - windowHalfX ) / 100;
+                mouseY = ( clientY - windowHalfY ) / 100;
             }
+
 
             function animate() {
                 const delta = clock.getDelta();
