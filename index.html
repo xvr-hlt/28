@@ -100,7 +100,7 @@
                         const model = gltf.scene;
                         const animations = gltf.animations;
                         const runClip = THREE.AnimationClip.findByName( animations, 'run' );
-                        const numFigures = 1;
+                        const numFigures = 2;
                         for ( let i = 0; i < numFigures; i++ ) {
                             const newFigure = SkeletonUtils.clone( model );
                             const mixer = new THREE.AnimationMixer( newFigure );
