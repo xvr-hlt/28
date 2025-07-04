@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>three.js - Original Movement</title>
+        <title>three.js webgl - effects - anaglyph</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <style>
@@ -24,7 +24,9 @@
     </head>
     <body>
         <div id="info">
-            Original Camera Feel with a Single Figure
+            happy birthday i put us in the cube
+            <br><br>
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2n5h6g3z62bsA12y0i3k2A?utm_source=generator" width="75%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </div>
 
         <script type="importmap">
@@ -39,13 +41,11 @@
         <script type="module">
 
             import * as THREE from 'three';
-            import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-            import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-            import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+            import { AnaglyphEffect } from 'three/addons/effects/AnaglyphEffect.js';
             import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
             import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
-            let container, camera, scene, renderer, composer, bloomPass;
+            let container, camera, scene, renderer, effect; // Restored 'effect'
             const spheres = [];
             let mouseX = 0, mouseY = 0;
             let windowHalfX = window.innerWidth / 2;
@@ -61,7 +61,6 @@
                 container = document.createElement( 'div' );
                 document.body.appendChild( container );
 
-                // ✨ Camera settings exactly as per your original code
                 camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.01, 100 );
                 camera.position.z = 3;
 
@@ -83,9 +82,8 @@
 
                 const sphereGeometry = new THREE.SphereGeometry( 0.1, 32, 16 );
                 const sphereMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube } );
-                for ( let i = 0; i < 500; i ++ ) { // Restored to 500 spheres
+                for ( let i = 0; i < 500; i ++ ) {
                     const mesh = new THREE.Mesh( sphereGeometry, sphereMaterial );
-                    // Initial random positions, as per original
                     mesh.position.x = Math.random() * 10 - 5;
                     mesh.position.y = Math.random() * 10 - 5;
                     mesh.position.z = Math.random() * 10 - 5;
@@ -130,19 +128,13 @@
                 renderer.setAnimationLoop( animate );
                 container.appendChild( renderer.domElement );
 
-                const renderScene = new RenderPass( scene, camera );
-                bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 0.25, 0.1, 0.85 );
-                bloomPass.threshold = 0.9;
-                bloomPass.strength = 0.3;
-                bloomPass.radius = 0.1;
-
-                composer = new EffectComposer( renderer );
-                composer.addPass( renderScene );
-                composer.addPass( bloomPass );
+                const width = window.innerWidth || 2;
+                const height = window.innerHeight || 2;
+                effect = new AnaglyphEffect( renderer );
+                effect.setSize( width, height );
 
                 window.addEventListener( 'resize', onWindowResize );
                 document.addEventListener( 'mousemove', onDocumentMouseMove );
-                onWindowResize();
             }
 
             function onWindowResize() {
@@ -150,11 +142,10 @@
                 windowHalfY = window.innerHeight / 2;
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
-                renderer.setSize( window.innerWidth, window.innerHeight );
-                composer.setSize( window.innerWidth, window.innerHeight );
+
+                effect.setSize( window.innerWidth, window.innerHeight );
             }
 
-            // ✨ Mouse movement logic exactly as per your original code
             function onDocumentMouseMove( event ) {
                 mouseX = ( event.clientX - windowHalfX ) / 100;
                 mouseY = ( event.clientY - windowHalfY ) / 100;
@@ -164,7 +155,6 @@
                 const delta = clock.getDelta();
                 const elapsedTime = clock.getElapsedTime();
 
-                // ✨ Camera movement exactly as per your original code
                 camera.position.x += ( mouseX - camera.position.x ) * .05;
                 camera.position.y += ( -mouseY - camera.position.y ) * .05;
                 camera.lookAt( scene.position );
@@ -181,16 +171,14 @@
                     }
                 }
 
-                // ✨ Sphere movement exactly as per your original code
-                const timer = elapsedTime * 0.1; // Using clock for smooth timing
+                const timer = elapsedTime * 0.1;
                 for ( let i = 0, il = spheres.length; i < il; i ++ ) {
                     const sphere = spheres[ i ];
                     sphere.position.x = 5 * Math.cos( timer + i );
                     sphere.position.y = 5 * Math.sin( timer + i * 1.1 );
-                    // The sphere's z position is not changed, just like the original.
                 }
 
-                composer.render();
+                effect.render( scene, camera );
             }
         </script>
     </body>
